@@ -1,5 +1,7 @@
-import firebase from 'firebase/app';
-
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBdWYw4mnZUaBdUZMIjSoFKURDdfFu6c2E",
@@ -12,5 +14,25 @@ const firebaseConfig = {
     measurementId: "G-Z800GB38XJ"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+export const db = getFirestore(app);
+// export {auth}
+
+
+export const signupUser = (email: string, password: string): void => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // User signed up successfully
+        const user = userCredential.user;
+        console.log('User created:', user);
+        // You can do something after the user is signed up
+      })
+      .catch((error: { code: string, message: string }) => {
+        // Handle errors during sign-up
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error:', errorCode, errorMessage);
+      });
+  }
 
