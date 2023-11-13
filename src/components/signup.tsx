@@ -1,6 +1,6 @@
 import React from "react";
 import {auth} from "../services/firebase"
-import {createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 
 
