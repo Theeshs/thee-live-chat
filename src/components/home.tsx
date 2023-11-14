@@ -1,25 +1,51 @@
-import React from 'react';
-import {realtimeDb} from "../services/firebase";
-import { ref, set } from "firebase/database";
+import React, { useEffect, useState } from 'react';
 
+import { onAuthStateChanged } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import ChatBox from './chatbox';
+import Navbar from './navbar';
+import { auth } from '../services/firebase';
 
-const sendMessage = () => {
-    debugger
-    set(ref(realtimeDb, "chats"), {
-        "message": "Test",
-        "recievedBy": "Thee",
-        "sentBy": "Janiee",
-        "sentTime": "November 13, 2023 at 12:00:00 AM UTC+8"
-    })
-}
+type MsgObject = {
+  message: string;
+  recievedBy: string;
+  sentBy: string;
+  sentTime: string;
+};
 
 const Home = () => {
-    sendMessage()
-    return (
-        <h2>
-            Regist
-        </h2>
-        )
-}
+  /** the home componet, will be work as the main UI for the chat users and the chat boxes */
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState({ email: '', userId: '' });
+  const [messages, setMessages] = useState<MsgObject[]>([]);
 
-export  default  Home
+  useEffect(() => {
+    // we are using the useEffect hook inorder to manage the auth state of the login user here
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const email = user.email ? user.email : '';
+        const userId = user.uid ? user.uid : '';
+        setUserData({
+          email: email,
+          userId: userId,
+        });
+      } else {
+        navigate('/login');
+      }
+    });
+  }, [navigate]);
+
+  return (
+    <div>
+      <Navbar />
+      <div className='row'></div>
+      <div className='container mt-10'>
+        <div className='row mt-10'>
+          <ChatBox user={userData} messages={messages} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;
